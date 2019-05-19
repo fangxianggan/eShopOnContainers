@@ -19,8 +19,6 @@ The architecture proposes a microservice oriented architecture implementation wi
 
 CAP is a library based on .Net standard, which is a solution to deal with distributed transactions, also has the function of EventBus, it is lightweight, easy to use, and efficiently.
 
-Microsoft's eShopOnContainers solution contains a simple, light-weight IEventBus implementation running on top of RabbitMQ. That implementation is only intended for development and testing. In this fork we replaced the test implementation with NServiceBus.
-
 CAP is adopted the local message table program integrated with the current database to solve the exception may occur in the process of the distributed system calling each other. It can ensure that the event messages are not lost in any case.
 
 CAP provides a simpler way to implement event publishing and subscriptions, you do not need to inherit or implement any interface during the process of subscription and sending.
