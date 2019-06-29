@@ -1,4 +1,4 @@
-# eShopOnContainers with CAP
+# eShopOnContainers with [CAP](https://github.com/dotnetcore/CAP)
 
 This is a fork of a sample .NET Core reference application [eShopOnContainers](https://github.com/dotnet-architecture/eShopOnContainers) developed by Microsoft, modified to run on top of [CAP](https://github.com/dotnetcore/CAP). 
 
