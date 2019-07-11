@@ -1,4 +1,4 @@
-# eShopOnContainers with CAP
+# eShopOnContainers with [CAP](https://github.com/dotnetcore/CAP)
 
 This is a fork of a sample .NET Core reference application [eShopOnContainers](https://github.com/dotnet-architecture/eShopOnContainers) developed by Microsoft, modified to run on top of [CAP](https://github.com/dotnetcore/CAP). 
 
@@ -18,8 +18,6 @@ The architecture proposes a microservice oriented architecture implementation wi
 ## CAP overview
 
 CAP is a library based on .Net standard, which is a solution to deal with distributed transactions, also has the function of EventBus, it is lightweight, easy to use, and efficiently.
-
-Microsoft's eShopOnContainers solution contains a simple, light-weight IEventBus implementation running on top of RabbitMQ. That implementation is only intended for development and testing. In this fork we replaced the test implementation with NServiceBus.
 
 CAP is adopted the local message table program integrated with the current database to solve the exception may occur in the process of the distributed system calling each other. It can ensure that the event messages are not lost in any case.
 
