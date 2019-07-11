@@ -25,6 +25,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.eShopOnContainers.Services.Basket.API.Infrastructure.Repositories;
 
 namespace Microsoft.eShopOnContainers.Services.Basket.API
 {
