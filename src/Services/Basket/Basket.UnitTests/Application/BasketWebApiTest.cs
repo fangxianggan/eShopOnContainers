@@ -2,6 +2,7 @@
 using Basket.API.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.eShopOnContainers.BuildingBlocks.EventBus.Abstractions;
 using Microsoft.eShopOnContainers.Services.Basket.API.Controllers;
 using Microsoft.eShopOnContainers.Services.Basket.API.Model;
 using Microsoft.Extensions.Logging;
@@ -10,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using DotNetCore.CAP;
 using Xunit;
 using IBasketIdentityService = Microsoft.eShopOnContainers.Services.Basket.API.Services.IIdentityService;
 
@@ -20,14 +20,14 @@ namespace UnitTest.Basket.Application
     {
         private readonly Mock<IBasketRepository> _basketRepositoryMock;
         private readonly Mock<IBasketIdentityService> _identityServiceMock;
-        private readonly Mock<ICapPublisher> _serviceBusMock;
+        private readonly Mock<IEventBus> _serviceBusMock;
         private readonly Mock<ILogger<BasketController>> _loggerMock;
 
         public BasketWebApiTest()
         {
             _basketRepositoryMock = new Mock<IBasketRepository>();
             _identityServiceMock = new Mock<IBasketIdentityService>();
-            _serviceBusMock = new Mock<ICapPublisher>();
+            _serviceBusMock = new Mock<IEventBus>();
             _loggerMock = new Mock<ILogger<BasketController>>();
         }
 
@@ -42,7 +42,7 @@ namespace UnitTest.Basket.Application
                 .Returns(Task.FromResult(fakeCustomerBasket));
             _identityServiceMock.Setup(x => x.GetUserIdentity()).Returns(fakeCustomerId);
 
-            _serviceBusMock.Setup(x => x.Publish(nameof(UserCheckoutAcceptedIntegrationEvent), It.IsAny<UserCheckoutAcceptedIntegrationEvent>(), null));
+            _serviceBusMock.Setup(x => x.Publish(It.IsAny<UserCheckoutAcceptedIntegrationEvent>()));
 
             //Act
             var basketController = new BasketController(
@@ -54,7 +54,8 @@ namespace UnitTest.Basket.Application
             var actionResult = await basketController.GetBasketByIdAsync(fakeCustomerId);
 
             //Assert
-            Assert.Equal(((CustomerBasket)actionResult.Value).BuyerId, fakeCustomerId);
+            Assert.Equal((actionResult.Result as OkObjectResult).StatusCode, (int)System.Net.HttpStatusCode.OK);
+            Assert.Equal((((ObjectResult)actionResult.Result).Value as CustomerBasket).BuyerId, fakeCustomerId);
         }
 
         [Fact]
@@ -67,7 +68,7 @@ namespace UnitTest.Basket.Application
             _basketRepositoryMock.Setup(x => x.UpdateBasketAsync(It.IsAny<CustomerBasket>()))
                 .Returns(Task.FromResult(fakeCustomerBasket));
             _identityServiceMock.Setup(x => x.GetUserIdentity()).Returns(fakeCustomerId);
-            _serviceBusMock.Setup(x => x.Publish(nameof(UserCheckoutAcceptedIntegrationEvent), It.IsAny<UserCheckoutAcceptedIntegrationEvent>(), null));
+            _serviceBusMock.Setup(x => x.Publish(It.IsAny<UserCheckoutAcceptedIntegrationEvent>()));
 
             //Act
             var basketController = new BasketController(
@@ -79,7 +80,8 @@ namespace UnitTest.Basket.Application
             var actionResult = await basketController.UpdateBasketAsync(fakeCustomerBasket);
 
             //Assert
-            Assert.Equal(((CustomerBasket)actionResult.Value).BuyerId, fakeCustomerId);
+            Assert.Equal((actionResult.Result as OkObjectResult).StatusCode, (int)System.Net.HttpStatusCode.OK);
+            Assert.Equal((((ObjectResult)actionResult.Result).Value as CustomerBasket).BuyerId, fakeCustomerId);
         }
 
         [Fact]
@@ -130,7 +132,7 @@ namespace UnitTest.Basket.Application
             //Act
             var result = await basketController.CheckoutAsync(new BasketCheckout(), Guid.NewGuid().ToString()) as AcceptedResult;
 
-            _serviceBusMock.Verify(mock => mock.Publish(nameof(UserCheckoutAcceptedIntegrationEvent), It.IsAny<UserCheckoutAcceptedIntegrationEvent>(), null), Times.Once);
+            _serviceBusMock.Verify(mock => mock.Publish(It.IsAny<UserCheckoutAcceptedIntegrationEvent>()), Times.Once);
 
             Assert.NotNull(result);
         }
